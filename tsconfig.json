@@ -33,7 +33,8 @@
     "app/api/auth/[...nextauth]/route.js",
     "app/api/auth/[...nextauth]/options.js",
     "app/(auth)/layout.jsx",
-    "model/User.ts"
+    "model/User.ts",
+    "components/emails/VerificationEmail.jsx"
   ],
   "exclude": ["node_modules"]
 }

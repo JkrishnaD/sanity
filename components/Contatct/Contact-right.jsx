@@ -4,7 +4,6 @@ import cn from "classnames";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-
 import { Button } from "../../@/components/ui/button";
 import {
   Form,
@@ -27,10 +26,10 @@ import { Textarea } from "../../@/components/ui/textarea";
 import { BiSupport } from "react-icons/bi";
 import Link from "next/link";
 import { socialLinks } from "../Footer";
-import { sendContactEmail } from "../../app/action/sendContactEmail";
 
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { sendContactEmail } from "../../actions/mail";
 
 const formSchema = z.object({
   fullName: z
@@ -68,6 +67,7 @@ export default function ContactRightComp({ className }) {
         data.message,
         data.subject,
       );
+      console.log(res.status);
       if (res.status !== 200) throw new Error(res.message);
       toast.success(res.message);
     } catch (error) {

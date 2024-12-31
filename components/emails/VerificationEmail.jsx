@@ -1,15 +1,7 @@
 import Head from "next/head";
 import React from "react";
 
-interface VerificationEmailProps {
-  username: string;
-  otp: string;
-}
-
-export default function VerificationEmailProps({
-  username,
-  otp,
-}: VerificationEmailProps) {
+export default function VErificationEmailTemplate({ username, otp }) {
   return (
     <html lang="en" dir="ltr">
       <Head>

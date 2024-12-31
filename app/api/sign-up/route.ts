@@ -1,4 +1,4 @@
-import { sendVerificationEmail } from "../../../components/emails/sendVerificationEmail";
+import { sendVerificationEmail } from "../../../actions/mail";
 import dbConnect from "../../../lib/dbConnect";
 import UserModel from "../../../model/User";
 import bcrypt from "bcryptjs";
@@ -65,11 +65,11 @@ export async function POST(request: Request) {
     }
 
     // Send verification email
-    const emailResponse = await sendVerificationEmail(
+    const emailResponse = await sendVerificationEmail({
       email,
       username,
       verifyCode,
-    );
+    });
     console.log(emailResponse);
 
     if (!emailResponse.success) {
