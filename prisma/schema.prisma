@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// This is the Prisma schema file (schema.prisma)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  email            String             @unique
+  password         String
+  eventsRegistered Tournament[]       @relation("EventsRegistered")
+  tournaments      Tournament[]       @relation("UserTournaments")
+  games            Game[]             @relation("UserGames")
+  brackets         Bracket[]
+  teams            TeamPlayers[]
+}
+
+model Tournament {
+  id                String             @id @default(auto()) @map("_id") @db.ObjectId
+  tournamentName    String
+  tournamentDates   TournamentDates    @relation(fields: [tournamentDatesId], references: [id])
+  tournamentDatesId String             @db.ObjectId
+  schedules         Json?
+  results           Json[]
+  teamsRegistered   TeamRegistration[] @relation("TeamsRegistered")
+  brackets          Bracket[]          @relation("TournamentBrackets")
+  participants      User[]             @relation("TournamentParticipants")
+  organizerId       String             @db.ObjectId
+  organizer         Organizer          @relation(fields: [organizerId], references: [id])
+}
+
+model Team {
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  players   TeamPlayers[]
+  requests  TeamPlayers[]
+}
+
+model TeamPlayers {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String @db.ObjectId
+  teamId  String @db.ObjectId
+
+  user User @relation(fields: [userId], references: [id])
+  team Team @relation(fields: [teamId], references: [id])
+}
+
+model TeamRegistration {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  tournamentId String      @db.ObjectId
+  tournament   Tournament? @relation("TeamsRegistered", fields: [tournamentId], references: [id])
+}
+
+model TournamentDates {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  tournamentId String?      @db.ObjectId
+  tournament   Tournament?  @relation(fields: [tournamentId], references: [id])
+}
+
+model Bracket {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  size         String?
+  tournamentId String        @db.ObjectId
+  tournament   Tournament    @relation(fields: [tournamentId], references: [id], name: "TournamentBrackets")
+}
+
+model Organizer {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  tournaments  Tournament[]
+}
+
+model Match {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  date         DateTime
+  tournamentId String       @db.ObjectId
+  tournament   TournamentDates @relation(fields: [tournamentId], references: [id])
+  teams        MatchTeams[]
+}
+
+model MatchTeams {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  teamId   String  @db.ObjectId
+  matchId  String  @db.ObjectId
+
+  team  Team  @relation(fields: [teamId], references: [id])
+  match Match @relation(fields: [matchId], references: [id])
+}
+
+model Game {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  gameName  String
+  players   User[] @relation("UserGames")
+}
